@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      payload-cms-audit-log-plugin:
-        specifier: ^1.0.0
-        version: 1.0.0(payload@3.82.1(graphql@16.13.2)(typescript@5.7.3))
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.2.0
@@ -4366,12 +4362,6 @@ packages:
 
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
-
-  payload-cms-audit-log-plugin@1.0.0:
-    resolution: {integrity: sha512-KpXwo1L+Zw86wnbx0JTcHTsTymoVnvnT5jPdphnjyK9tjYvMN/xNm33u7YXJFCixUTWIap6d39mwoTHS0YHT6A==}
-    engines: {node: ^18.20.2 || >=20.9.0, pnpm: ^9 || ^10}
-    peerDependencies:
-      payload: ^3.82.1
 
   payload@3.82.1:
     resolution: {integrity: sha512-BtsgQhCIpBM/2hFPGByJPNumE2Pefh9KVlQAxNQCswBGbGBAWxb6aixAVkafyTxP1//YuKCSiN1B+XS0n02QJg==}
@@ -10255,10 +10245,6 @@ snapshots:
   path-type@4.0.0: {}
 
   pathe@2.0.3: {}
-
-  payload-cms-audit-log-plugin@1.0.0(payload@3.82.1(graphql@16.13.2)(typescript@5.7.3)):
-    dependencies:
-      payload: 3.82.1(graphql@16.13.2)(typescript@5.7.3)
 
   payload@3.82.1(graphql@16.13.2)(typescript@5.7.3):
     dependencies:

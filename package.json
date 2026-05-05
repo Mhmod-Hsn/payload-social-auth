@@ -1,15 +1,15 @@
 {
-  "name": "payload-audit-logs",
-  "version": "1.0.1",
-  "description": "Audit log plugin for Payload CMS",
+  "name": "payload-social-auth",
+  "version": "1.0.0",
+  "description": "Social Auth plugin for Payload CMS",
   "license": "MIT",
-  "homepage": "https://github.com/Mhmod-Hsn/payload-audit-logs#readme",
+  "homepage": "https://github.com/Mhmod-Hsn/payload-social-auth#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Mhmod-Hsn/payload-audit-logs.git"
+    "url": "git+https://github.com/Mhmod-Hsn/payload-social-auth.git"
   },
   "bugs": {
-    "url": "https://github.com/Mhmod-Hsn/payload-audit-logs/issues"
+    "url": "https://github.com/Mhmod-Hsn/payload-social-auth/issues"
   },
   "author": "Mahmoud Hassan",
   "type": "module",

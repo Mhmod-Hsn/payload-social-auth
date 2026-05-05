@@ -22,9 +22,6 @@
     "composite": true,
     "paths": {
       "@payload-config": ["./dev/payload.config.ts"],
-      // "payload-audit-logs": ["./src/index.ts"],
-      // "payload-audit-logs/client": ["./src/exports/client.ts"],
-      // "payload-audit-logs/rsc": ["./src/exports/rsc.ts"]
     },
     "plugins": [
       {

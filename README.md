@@ -1,130 +1,121 @@
-# Payload Audit Logs
+# Payload Social Auth Plugin
 
-A [Payload CMS](https://payloadcms.com) plugin to automatically track and log CRUD operations (Create, Read, Update, Delete) on specified collections.
-
-## Features
-
-- **Automatic Logging**: Automatically creates audit logs for `create`, `read`, `update`, and `delete` operations.
-- **Configurable**: Choose which collections and which operations to track.
-- **Historical Data**: Stores both the `originalData` (before change) and `newData` (after change) for full auditability.
-- **User Association**: Automatically links logs to the user who performed the operation.
-- **Easy Integration**: Simple setup in your Payload configuration.
+A social authentication plugin for Payload CMS that enables login with GitHub, Google, Facebook, Twitter, and LinkedIn.
 
 ## Installation
 
 ```bash
-pnpm add payload-audit-logs
+npm install payload-social-auth
 # or
-npm install payload-audit-logs
-# or
-yarn add payload-audit-logs
+pnpm add payload-social-auth
 ```
 
 ## Usage
 
-Add the plugin to your Payload configuration:
-
-```ts
-import { buildConfig } from 'payload'
-import { auditLogPlugin } from 'payload-audit-logs'
+```javascript
+import { buildConfig } from 'payload';
+import { socialAuthPlugin } from 'payload-social-auth';
 
 export default buildConfig({
+  // ... your existing config
   plugins: [
-    auditLogPlugin({
-      collections: {
-        posts: {
-          operations: ['create', 'update', 'delete'],
+    socialAuthPlugin({
+      providers: {
+        github: {
+          clientId: process.env.GITHUB_CLIENT_ID,
+          clientSecret: process.env.GITHUB_CLIENT_SECRET,
         },
-        users: {
-          operations: ['create', 'update', 'delete'],
+        google: {
+          clientId: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         },
-        media: {
-          operations: ['create', 'update', 'delete'],
-        },
+        // Add other providers as needed
       },
-      userCollection: 'users', // Optional, defaults to 'users'
+      jwtSecret: process.env.JWT_SECRET, // optional, defaults to Payload's secret
+      cookieName: 'payload-social-auth-token', // optional
+      autoCreateUser: true, // optional, defaults to true
+      defaultRole: 'user', // optional, defaults to 'user'
+      onAuthSuccess: async (user, provider) => {
+        // Custom logic after successful authentication
+        console.log(`User ${user.id} authenticated via ${provider}`);
+      },
+      onAuthFailure: async (error, provider) => {
+        // Custom logic after failed authentication
+        console.error(`Auth failed via ${provider}:`, error);
+      }
     }),
   ],
-  // ... rest of your config
-})
+});
 ```
 
-## Configuration
+## Configuration Options
 
-The plugin accepts the following options:
+| Option | Type | Description |
+|--------|------|-------------|
+| `disabled` | boolean | Enable/disable the plugin |
+| `providers` | object | Configuration for social providers (github, google, facebook, twitter, linkedin) |
+| `providers.[provider].clientId` | string | OAuth client ID |
+| `providers.[provider].clientSecret` | string | OAuth client secret |
+| `providers.[provider].callbackURL` | string | Optional callback URL |
+| `providers.[provider].scope` | string | Optional OAuth scope |
+| `jwtSecret` | string | JWT secret for signing tokens (optional) |
+| `cookieName` | string | Cookie name for storing auth state (optional) |
+| `autoCreateUser` | boolean | Whether to automatically create users (optional, defaults to true) |
+| `defaultRole` | string | Default role for new users (optional, defaults to 'user') |
+| `onAuthSuccess` | function | Callback after successful authentication |
+| `onAuthFailure` | function | Callback after failed authentication |
 
-| Option | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `collections` | `Record<string, { operations: string[] }>` | `{}` | A map of collection slugs to track and the operations to log for each. |
-| `disabled` | `boolean` | `false` | If `true`, the plugin will be disabled. |
-| `userCollection` | `string` | `'users'` | The slug of the collection used for users. |
+## Provider Setup
 
-### Operations
+### GitHub
+1. Go to https://github.com/settings/developers
+2. Create a new OAuth App
+3. Set callback URL to `https://your-domain.com/api/auth/github/callback`
+4. Copy Client ID and Client Secret
 
-You can specify which operations to log for each collection:
-- `create`: Logs when a new document is created.
-- `read`: Logs when a document is retrieved.
-- `update`: Logs when an existing document is modified.
-- `delete`: Logs when a document is removed.
+### Google
+1. Go to https://console.cloud.google.com/apis/credentials
+2. Create OAuth 2.0 Client ID
+3. Set authorized redirect URI to `https://your-domain.com/api/auth/google/callback`
+4. Copy Client ID and Client Secret
 
-> **CAUTION**: Enabling the `read` operation can significantly increase database storage consumption and create redundant logs, especially for high-traffic collections. Use it sparingly and only when strictly necessary for auditing sensitive information.
+### Facebook
+1. Go to https://developers.facebook.com/apps/
+2. Create a new app
+3. Add Facebook Login product
+4. Set Valid OAuth Redirect URIs to `https://your-domain.com/api/auth/facebook/callback`
+5. Copy App ID and App Secret
 
-## Code Sample
+### Twitter
+1. Go to https://developer.twitter.com/
+2. Create a new project and app
+3. Set Callback URI to `https://your-domain.com/api/auth/twitter/callback`
+4. Copy API Key and API Secret Key
 
-```ts
-import { buildConfig } from 'payload'
-import { auditLogPlugin } from 'payload-audit-logs'
+### LinkedIn
+1. Go to https://www.linkedin.com/developers/
+2. Create a new app
+3. Set Redirect URL to `https://your-domain.com/api/auth/linkedin/callback`
+4. Copy Client ID and Client Secret
 
-export default buildConfig({
-  plugins: [
-    auditLogPlugin({
-      // Track specific collections
-      collections: {
-        posts: {
-          operations: ['create', 'update', 'delete'],
-        },
-        // Sensitive data might require 'read' logging
-        settings: {
-          operations: ['read', 'update'],
-        },
-      },
-      // Configure user collection if it's not 'users'
-      userCollection: 'admins',
-      // Useful for environment-specific disabling
-      disabled: process.env.NODE_ENV === 'test',
-    }),
-  ],
-})
-```
+## How It Works
 
-## Audit Logs Collection
+1. The plugin adds two collections:
+   - `social-auth-providers`: Stores provider configurations
+   - `social-auth-tokens`: Stores user's social auth tokens
 
-When the plugin is enabled, it automatically adds an `Audit Logs` collection to your Payload admin panel.
+2. It adds API routes for OAuth callbacks:
+   - `/api/auth/github/callback`
+   - `/api/auth/google/callback`
+   - `/api/auth/facebook/callback`
+   - `/api/auth/twitter/callback`
+   - `/api/auth/linkedin/callback`
 
-### Fields
-
-- **Entity**: The slug of the collection where the operation occurred.
-- **Document ID**: The ID of the affected document.
-- **Operation**: The type of operation performed (`create`, `read`, `update`, or `delete`).
-- **User**: A relationship to the user who performed the operation.
-- **Original Data**: (JSON) The data before the change occurred (available for `update` and `delete`).
-- **New Data**: (JSON) The data after the change occurred (available for `create`, `read`, and `update`).
-- **Created At**: Timestamp of when the log entry was created.
-
-### Access Control
-
-By default:
-- **Create/Update/Delete**: Restricted (only the plugin can create logs).
-- **Read**: Any authenticated user can view audit logs.
-
-## Development
-
-If you want to contribute or modify the plugin:
-
-1. Clone the repository.
-2. Install dependencies: `pnpm install`.
-3. Start the dev project: `pnpm dev`.
-4. Run tests: `pnpm test`.
+3. When a user authenticates via a social provider:
+   - The plugin handles the OAuth flow
+   - Creates or finds a user in the `users` collection
+   - Stores tokens in the `social-auth-tokens` collection
+   - Returns a JWT for authentication
 
 ## License
 

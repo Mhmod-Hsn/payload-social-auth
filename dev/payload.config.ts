@@ -4,7 +4,6 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import path from 'path';
 import { buildConfig } from 'payload';
-import { auditLogPlugin } from 'payload-audit-logs';
 import sharp from 'sharp';
 import { fileURLToPath } from 'url';
 
@@ -73,21 +72,7 @@ const buildConfigWithMemoryDB = async () => {
     onInit: async (payload) => {
       await seed(payload)
     },
-    plugins: [
-      auditLogPlugin({
-        collections: {
-          media: {
-            operations: ['create', 'update', 'delete'],
-          },
-          posts: {
-            operations: ['create', 'update', 'delete'],
-          },
-          users: {
-            operations: ['create', 'update', 'delete'],
-          },
-        },
-      }),
-    ],
+    plugins: [],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
     sharp,
     typescript: {

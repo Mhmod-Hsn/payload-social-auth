@@ -1,5 +1,4 @@
-export { getAuditLogsCollection } from './collections/AuditLogs.js';
-export { auditLogPlugin } from './plugin.js';
-export type { AuditLogConfig, AuditLogOperation } from './types.js';
+export { socialAuthPlugin } from './plugin.js';
+export type { socialAuthConfig } from './types.js';
 
 
