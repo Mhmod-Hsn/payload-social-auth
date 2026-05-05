@@ -98,11 +98,24 @@ export const createGithubEndpoints = (config: ProviderConfig): Endpoint[] => {
             data: {
               email: primaryEmail,
               password: crypto.randomBytes(20).toString('hex'), // Random complex password
+              socialProvider: 'github',
+              socialId: String(githubUser.id),
             },
           });
           console.log('[OAuth Callback] Created new user:', { id: user.id, email: user.email });
         } else {
           console.log('[OAuth Callback] Found existing user:', { id: user.id, email: user.email });
+          if (!(user as any).socialProvider) {
+            user = await req.payload.update({
+              id: user.id,
+              collection: 'users',
+              data: {
+                socialProvider: 'github',
+                socialId: String(githubUser.id),
+              },
+            }) as any;
+            console.log('[OAuth Callback] Linked existing user to GitHub:', { id: user.id });
+          }
         }
 
         // 4. Generate Payload Session JWT
