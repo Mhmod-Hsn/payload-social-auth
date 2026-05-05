@@ -59,5 +59,74 @@ export const socialAuthPlugin =
       ...endpoints,
     ];
 
+    // 4. Inject social fields and override email field on auth collections
+    config.collections = (config.collections || []).map((collection) => {
+      if (collection.auth) {
+        let newFields = [...collection.fields];
+
+        if (!newFields.some((field) => 'name' in field && field.name === 'socialProvider')) {
+          newFields.push({
+            name: 'socialProvider',
+            type: 'text',
+            admin: {
+              position: 'sidebar',
+              readOnly: true,
+            },
+          });
+        }
+
+        if (!newFields.some((field) => 'name' in field && field.name === 'socialId')) {
+          newFields.push({
+            name: 'socialId',
+            type: 'text',
+            admin: {
+              position: 'sidebar',
+              readOnly: true,
+            },
+          });
+        }
+
+        const hasEmailField = newFields.some(
+          (field) => 'name' in field && field.name === 'email'
+        );
+
+        if (!hasEmailField) {
+          newFields.push({
+            name: 'email',
+            type: 'email',
+            access: {
+              update: ({ doc }) => {
+                // If socialProvider is present, disable email editing
+                return !doc?.socialProvider;
+              },
+            },
+            required: true,
+            unique: true,
+          });
+        } else {
+          newFields = newFields.map((field) => {
+            if ('name' in field && field.name === 'email') {
+              return {
+                ...field,
+                access: {
+                  ...(field as any).access,
+                  update: ({ doc }) => {
+                    return !doc?.socialProvider;
+                  },
+                },
+              };
+            }
+            return field;
+          });
+        }
+
+        return {
+          ...collection,
+          fields: newFields,
+        };
+      }
+      return collection;
+    });
+
     return config;
   };

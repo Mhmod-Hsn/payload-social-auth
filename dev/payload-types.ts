@@ -125,6 +125,8 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  socialProvider?: string | null;
+  socialId?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -255,6 +257,8 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  socialProvider?: T;
+  socialId?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
