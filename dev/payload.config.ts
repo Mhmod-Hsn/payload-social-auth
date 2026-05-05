@@ -7,6 +7,7 @@ import { buildConfig } from 'payload';
 import sharp from 'sharp';
 import { fileURLToPath } from 'url';
 
+import { socialAuthPlugin } from '../src/index.js';
 import { testEmailAdapter } from './helpers/testEmailAdapter.js';
 import { seed } from './seed.js';
 
@@ -63,7 +64,7 @@ const buildConfigWithMemoryDB = async () => {
       url: process.env.DATABASE_URL || `mongodb://localhost:27017/payloadmemory`,
     }) : sqliteAdapter({
       client: {
-        url: process.env.DATABASE_URL || `file:${path.resolve(dirname, 'payload.db')}`,
+        url: `file:${path.resolve(dirname, 'payload.db')}`,
       },
     }),
  
@@ -72,7 +73,17 @@ const buildConfigWithMemoryDB = async () => {
     onInit: async (payload) => {
       await seed(payload)
     },
-    plugins: [],
+    plugins: [
+      socialAuthPlugin({
+      providers: {
+        github: {
+          callbackURL: 'http://localhost:3000/api/oauth/github/callback',
+          clientId: process.env.GITHUB_CLIENT_ID!,
+          clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+        },
+      },
+    }),
+    ],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
     sharp,
     typescript: {
