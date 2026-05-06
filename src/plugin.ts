@@ -92,6 +92,7 @@ export const socialAuthPlugin =
             admin: {
               position: 'sidebar',
               readOnly: true,
+              hidden: true,
             },
           });
         }
@@ -103,7 +104,31 @@ export const socialAuthPlugin =
             admin: {
               position: 'sidebar',
               readOnly: true,
+              hidden: true,
             },
+          });
+        }
+
+        if (!newFields.some((field) => 'name' in field && field.name === 'socialProviders')) {
+          newFields.push({
+            name: 'socialProviders',
+            type: 'array',
+            admin: {
+              position: 'sidebar',
+              readOnly: true,
+            },
+            fields: [
+              {
+                name: 'provider',
+                type: 'text',
+                required: true,
+              },
+              {
+                name: 'id',
+                type: 'text',
+                required: true,
+              },
+            ],
           });
         }
 

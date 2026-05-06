@@ -127,6 +127,12 @@ export interface User {
   id: number;
   socialProvider?: string | null;
   socialId?: string | null;
+  socialProviders?:
+    | {
+        provider: string;
+        id: string;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -259,6 +265,12 @@ export interface PayloadMigration {
 export interface UsersSelect<T extends boolean = true> {
   socialProvider?: T;
   socialId?: T;
+  socialProviders?:
+    | T
+    | {
+        provider?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;

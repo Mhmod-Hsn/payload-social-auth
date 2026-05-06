@@ -32,21 +32,59 @@ export async function handleOAuthSuccess(
         password: crypto.randomBytes(20).toString('hex'), // Random complex password
         socialId,
         socialProvider: provider,
+        socialProviders: [
+          {
+            id: socialId,
+            provider,
+          }
+        ]
       },
     });
-    console.log(`[OAuth Callback] Created new user:`, { id: user.id, email: user.email });
+    console.log(`[OAuth Callback] Created new user with ${provider}:`, { id: user.id, email: user.email });
   } else {
     console.log(`[OAuth Callback] Found existing user:`, { id: user.id, email: user.email });
+    
+    const existingProviders = Array.isArray((user).socialProviders) 
+      ? [...(user).socialProviders] 
+      : [];
+      
+    // Auto-migrate legacy user if array is empty but single fields exist
+    if (existingProviders.length === 0 && (user).socialProvider) {
+      existingProviders.push({
+        id: (user).socialId,
+        provider: (user).socialProvider,
+      });
+    }
+
+    const hasThisProvider = existingProviders.some(
+      (p: any) => p.provider === provider && p.id === socialId
+    );
+
+    const updateData: Record<string, any> = {};
+
+    if (!hasThisProvider) {
+      updateData.socialProviders = [
+        ...existingProviders,
+        {
+          id: socialId,
+          provider,
+        }
+      ];
+      console.log(`[OAuth Callback] Linking additional provider ${provider} to existing user:`, { id: user.id });
+    }
+
+    // For backward compatibility, if the legacy socialProvider isn't set, set it
     if (!(user).socialProvider) {
+      updateData.socialProvider = provider;
+      updateData.socialId = socialId;
+    }
+
+    if (Object.keys(updateData).length > 0) {
       user = await req.payload.update({
         id: user.id,
         collection: 'users',
-        data: {
-          socialId,
-          socialProvider: provider,
-        },
+        data: updateData,
       });
-      console.log(`[OAuth Callback] Linked existing user to ${provider}:`, { id: user.id });
     }
   }
 
