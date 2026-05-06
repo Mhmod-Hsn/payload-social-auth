@@ -90,9 +90,9 @@ export const socialAuthPlugin =
             name: 'socialProvider',
             type: 'text',
             admin: {
+              hidden: true,
               position: 'sidebar',
               readOnly: true,
-              hidden: true,
             },
           });
         }
@@ -102,9 +102,9 @@ export const socialAuthPlugin =
             name: 'socialId',
             type: 'text',
             admin: {
+              hidden: true,
               position: 'sidebar',
               readOnly: true,
-              hidden: true,
             },
           });
         }
@@ -129,6 +129,33 @@ export const socialAuthPlugin =
                 required: true,
               },
             ],
+          });
+        }
+
+        if (!newFields.some((field) => 'name' in field && field.name === 'socialProvidersList')) {
+          newFields.push({
+            name: 'socialProvidersList',
+            type: 'text',
+            admin: {
+              hidden: true,
+              position: 'sidebar',
+              readOnly: true,
+  },
+            hooks: {
+              beforeChange: [
+                ({ data }) => {
+                  if (data && Array.isArray(data.socialProviders)) {
+                    return data.socialProviders
+                      .map((p: any) => p.provider)
+                      .filter(Boolean)
+                      .map((p: string) => p.charAt(0).toUpperCase() + p.slice(1))
+                      .join(', ');
+                  }
+                  return '';
+                },
+              ],
+            },
+            label: 'Social Providers',
           });
         }
 
@@ -166,8 +193,18 @@ export const socialAuthPlugin =
           });
         }
 
+        const defaultColumns = collection.admin?.defaultColumns || ['email'];
+        const hasProvidersListColumn = defaultColumns.includes('socialProvidersList');
+        const newDefaultColumns = hasProvidersListColumn 
+          ? defaultColumns 
+          : [...defaultColumns, 'socialProvidersList'];
+
         return {
           ...collection,
+          admin: {
+            ...collection.admin,
+            defaultColumns: newDefaultColumns,
+          },
           fields: newFields,
         };
       }

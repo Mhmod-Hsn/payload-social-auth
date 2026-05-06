@@ -133,6 +133,7 @@ export interface User {
         id: string;
       }[]
     | null;
+  socialProvidersList?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -271,6 +272,7 @@ export interface UsersSelect<T extends boolean = true> {
         provider?: T;
         id?: T;
       };
+  socialProvidersList?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
