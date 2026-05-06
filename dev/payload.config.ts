@@ -81,6 +81,11 @@ const buildConfigWithMemoryDB = async () => {
           clientId: process.env.GITHUB_CLIENT_ID!,
           clientSecret: process.env.GITHUB_CLIENT_SECRET!,
         },
+        google: {
+          callbackURL: 'http://localhost:3000/api/oauth/google/callback',
+          clientId: process.env.GOOGLE_CLIENT_ID!,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+        },
       },
     }),
     ],

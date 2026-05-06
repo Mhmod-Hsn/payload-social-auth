@@ -2,11 +2,8 @@ import configPromise from '@payload-config';
 import { getPayload } from 'payload';
 import React from 'react';
 
-const sharedButtonStyles: React.CSSProperties = {
-  maxWidth: 'fit-content',
-  textAlign: 'center',
-  textDecoration: 'none',
-}
+import { GithubIcon, GoogleIcon } from './icons';
+import classes from './SocialLoginButtons.module.css';
 
 export const SocialLoginButtons: React.FC = async () => {
   const payload = await getPayload({ config: configPromise });
@@ -21,33 +18,32 @@ export const SocialLoginButtons: React.FC = async () => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1rem', marginTop: '1rem' }}>
-
-
+    <div className={classes.container}>
+      <div className={classes.buttons}>
       {githubEnabled && (
         <a 
-          className="btn btn--style-secondary btn--size-medium" 
+          className={`btn btn--style-secondary btn--size-medium ${classes.button}`} 
           href="/api/oauth/github"
-          style={{ textAlign: 'center', textDecoration: 'none' }}
         >
-          GitHub
+          <GithubIcon />
+          <span>GitHub</span>
         </a>
       )}
 
       {googleEnabled && (
         <a 
-          className="btn btn--style-secondary btn--size-medium" 
+          className={`btn btn--style-secondary btn--size-medium ${classes.button}`} 
           href="/api/oauth/google"
-          style={{ textAlign: 'center', textDecoration: 'none' }}
         >
-          Google
+          <GoogleIcon />
+          <span>Google</span>
         </a>
       )}   
-      
-      <div style={{ alignItems: 'center', color: 'var(--theme-elevation-400)', display: 'flex', textAlign: 'center' }}>
-        <div style={{ backgroundColor: 'var(--theme-elevation-200)', flex: 1, height: '1px' }} />
-        <span style={{ fontSize: '0.8rem', padding: '0 10px', textTransform: 'uppercase' }}>Or continue with</span>
-        <div style={{ backgroundColor: 'var(--theme-elevation-200)', flex: 1, height: '1px' }} />
+    </div>
+      <div className={classes.divider}>
+        <div className={classes.dividerLine} />
+        <span className={classes.dividerText}>Or continue with email</span>
+        <div className={classes.dividerLine} />
       </div>
     </div>
   );
