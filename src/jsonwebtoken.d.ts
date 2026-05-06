@@ -1,7 +1,7 @@
 declare module 'jsonwebtoken';
 
 declare module 'next/headers' {
-  export function cookies(): Promise<any> | any;
+  export function cookies(): any | Promise<any>;
 }
 
 declare module '@payload-config' {

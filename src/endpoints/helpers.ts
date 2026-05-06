@@ -89,7 +89,7 @@ export async function handleOAuthSuccess(
   }
 
   // 2. Generate Payload Session JWT
-  const usersCollection = req.payload.config.collections.find(c => c.slug === 'users');
+  const usersCollection = req.payload.config.collections.find((c: any) => c.slug === 'users');
   const expiresIn = (usersCollection?.auth)?.tokenExpiration || 7200;
   
   const useSessions = (usersCollection?.auth)?.useSessions !== false;

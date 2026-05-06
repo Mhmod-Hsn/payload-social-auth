@@ -1,5 +1,6 @@
 import type { Endpoint } from 'payload';
-import { type ProviderConfig, handleOAuthSuccess } from './helpers.js';
+
+import { handleOAuthSuccess, type ProviderConfig } from './helpers.js';
 
 export const createLinkedinEndpoints = (config: ProviderConfig): Endpoint[] => {
   return [
@@ -25,11 +26,11 @@ export const createLinkedinEndpoints = (config: ProviderConfig): Endpoint[] => {
         
         const redirectUri = config.callbackURL || `${req.protocol}://${req.host}/api/oauth/linkedin/callback`;
         const params = new URLSearchParams({
-          grant_type: 'authorization_code',
-          code,
-          redirect_uri: redirectUri,
           client_id: config.clientId,
           client_secret: config.clientSecret,
+          code,
+          grant_type: 'authorization_code',
+          redirect_uri: redirectUri,
         });
 
         const tokenRes = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {

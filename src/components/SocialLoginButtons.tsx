@@ -2,7 +2,7 @@ import configPromise from '@payload-config';
 import { getPayload } from 'payload';
 import React from 'react';
 
-import { GithubIcon, GoogleIcon, FacebookIcon, LinkedinIcon, TwitterIcon } from './icons';
+import { FacebookIcon, GithubIcon, GoogleIcon, LinkedinIcon, TwitterIcon } from './icons/index.js';
 import classes from './SocialLoginButtons.module.css';
 
 export const SocialLoginButtons: React.FC = async () => {

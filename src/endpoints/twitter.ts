@@ -1,7 +1,9 @@
 import type { Endpoint } from 'payload';
+
 import crypto from 'crypto';
 import { cookies } from 'next/headers';
-import { type ProviderConfig, handleOAuthSuccess } from './helpers.js';
+
+import { handleOAuthSuccess, type ProviderConfig } from './helpers.js';
 
 export const createTwitterEndpoints = (config: ProviderConfig): Endpoint[] => {
   return [
@@ -17,8 +19,8 @@ export const createTwitterEndpoints = (config: ProviderConfig): Endpoint[] => {
         
         try {
           const cookieStore = await cookies();
-          cookieStore.set('twitter_state', state, { maxAge: 300, path: '/', httpOnly: true });
-          cookieStore.set('twitter_code_verifier', codeVerifier, { maxAge: 300, path: '/', httpOnly: true });
+          cookieStore.set('twitter_state', state, { httpOnly: true, maxAge: 300, path: '/' });
+          cookieStore.set('twitter_code_verifier', codeVerifier, { httpOnly: true, maxAge: 300, path: '/' });
         } catch (cookieErr: any) {
           console.error('[Twitter Auth] Failed to set state/verifier cookies:', cookieErr.message);
         }
@@ -67,9 +69,9 @@ export const createTwitterEndpoints = (config: ProviderConfig): Endpoint[] => {
         const basicAuth = Buffer.from(`${config.clientId}:${config.clientSecret}`).toString('base64');
         const params = new URLSearchParams({
           code,
+          code_verifier: verifier,
           grant_type: 'authorization_code',
           redirect_uri: redirectUri,
-          code_verifier: verifier,
         });
 
         const tokenRes = await fetch('https://api.twitter.com/2/oauth2/token', {
