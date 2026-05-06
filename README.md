@@ -1,18 +1,57 @@
 # Payload Social Auth Plugin
 
-A social authentication plugin for Payload CMS that enables login with GitHub, Google, Facebook, Twitter, and LinkedIn.
+A modern, highly-polished, and fully-featured social authentication plugin for **Payload CMS** (v3) that enables seamless OAuth login with **GitHub**, **Google**, **Facebook**, **Twitter**, and **LinkedIn**.
 
-## Installation
+[![npm version](https://img.shields.io/npm/v/payload-social-auth.svg?style=flat-square)](https://www.npmjs.com/package/payload-social-auth)
+[![license](https://img.shields.io/npm/l/payload-social-auth.svg?style=flat-square)](https://github.com/Mhmod-Hsn/payload-social-auth/blob/main/LICENSE)
+[![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-cc00ff.svg?style=flat-square)](https://pnpm.io/)
+
+---
+
+## 📸 Screenshots
+
+### 1. Beautiful Admin Sign-In Page
+Featuring highly-polished, modern, and cohesive social login buttons that blend beautifully into Payload's dark/light modes:
+
+![Payload Social Auth Sign-In Page](screenshots/login-page.png)
+
+### 2. Multi-Provider Linked User Accounts
+Enables users to link multiple social identity providers seamlessly to a single user account:
+
+![Payload Social Auth Linked Accounts](screenshots/admin-panel.png)
+
+---
+
+## ✨ Features
+
+- **Zero Configuration Buttons:** Automatically injects beautifully styled social login buttons (with pixel-perfect SVG icons) directly onto the Payload login screen.
+- **Multiple Providers:** Full OAuth support for Google, GitHub, Facebook, Twitter, and LinkedIn.
+- **Auto-User Provisioning:** Automatically provisions new Payload users upon successful social authentication.
+- **Multi-Account Linking:** Links multiple social identities (e.g., Google and GitHub) to the same user account if they share the same email address.
+- **Secure Session Management:** Native session-token cookie integration with customizable expiration, HttpOnly, Secure, and SameSite flags.
+- **Type-Safe callbacks:** Customizable `onAuthSuccess` and `onAuthFailure` hooks for logging, onboarding flows, or analytics.
+
+---
+
+## 🚀 Installation
+
+Install the package via your preferred package manager:
 
 ```bash
+pnpm add payload-social-auth
+# or
 npm install payload-social-auth
 # or
-pnpm add payload-social-auth
+yarn add payload-social-auth
 ```
 
-## Usage
+---
 
-```javascript
+## 🛠️ Usage
+
+Simply import and add the plugin to your Payload configuration (`payload.config.ts`):
+
+```typescript
 import { buildConfig } from 'payload';
 import { socialAuthPlugin } from 'payload-social-auth';
 
@@ -22,25 +61,22 @@ export default buildConfig({
     socialAuthPlugin({
       providers: {
         github: {
-          clientId: process.env.GITHUB_CLIENT_ID,
-          clientSecret: process.env.GITHUB_CLIENT_SECRET,
+          clientId: process.env.GITHUB_CLIENT_ID!,
+          clientSecret: process.env.GITHUB_CLIENT_SECRET!,
         },
         google: {
-          clientId: process.env.GOOGLE_CLIENT_ID,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          clientId: process.env.GOOGLE_CLIENT_ID!,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
         },
         // Add other providers as needed
       },
-      jwtSecret: process.env.JWT_SECRET, // optional, defaults to Payload's secret
-      cookieName: 'payload-social-auth-token', // optional
+      jwtSecret: process.env.PAYLOAD_SECRET, // optional, defaults to Payload's secret
+      cookieName: 'payload-token', // optional
       autoCreateUser: true, // optional, defaults to true
-      defaultRole: 'user', // optional, defaults to 'user'
       onAuthSuccess: async (user, provider) => {
-        // Custom logic after successful authentication
-        console.log(`User ${user.id} authenticated via ${provider}`);
+        console.log(`User ${user.id} logged in via ${provider}`);
       },
       onAuthFailure: async (error, provider) => {
-        // Custom logic after failed authentication
         console.error(`Auth failed via ${provider}:`, error);
       }
     }),
@@ -48,75 +84,63 @@ export default buildConfig({
 });
 ```
 
-## Configuration Options
+---
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `disabled` | boolean | Enable/disable the plugin |
-| `providers` | object | Configuration for social providers (github, google, facebook, twitter, linkedin) |
-| `providers.[provider].clientId` | string | OAuth client ID |
-| `providers.[provider].clientSecret` | string | OAuth client secret |
-| `providers.[provider].callbackURL` | string | Optional callback URL |
-| `providers.[provider].scope` | string | Optional OAuth scope |
-| `jwtSecret` | string | JWT secret for signing tokens (optional) |
-| `cookieName` | string | Cookie name for storing auth state (optional) |
-| `autoCreateUser` | boolean | Whether to automatically create users (optional, defaults to true) |
-| `defaultRole` | string | Default role for new users (optional, defaults to 'user') |
-| `onAuthSuccess` | function | Callback after successful authentication |
-| `onAuthFailure` | function | Callback after failed authentication |
+## ⚙️ Configuration Options
 
-## Provider Setup
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `disabled` | `boolean` | `false` | Enable/disable the plugin |
+| `providers` | `object` | `{}` | Configuration object for social providers (`github`, `google`, `facebook`, `twitter`, `linkedin`) |
+| `providers.[provider].clientId` | `string` | *Required* | OAuth client application ID |
+| `providers.[provider].clientSecret` | `string` | *Required* | OAuth client application secret |
+| `providers.[provider].callbackURL` | `string` | *Optional* | Custom callback URL |
+| `providers.[provider].scope` | `string` | *Optional* | Custom OAuth scope string |
+| `jwtSecret` | `string` | `payload.secret` | JWT secret used to sign session cookies |
+| `cookieName` | `string` | `payload-token` | Custom authentication cookie name |
+| `autoCreateUser` | `boolean` | `true` | Automatically create a new user if one does not exist |
+| `onAuthSuccess` | `function` | `undefined` | Async callback triggered on successful login |
+| `onAuthFailure` | `function` | `undefined` | Async callback triggered on failed login |
 
-### GitHub
-1. Go to https://github.com/settings/developers
-2. Create a new OAuth App
-3. Set callback URL to `https://your-domain.com/api/auth/github/callback`
-4. Copy Client ID and Client Secret
+---
 
-### Google
-1. Go to https://console.cloud.google.com/apis/credentials
-2. Create OAuth 2.0 Client ID
-3. Set authorized redirect URI to `https://your-domain.com/api/auth/google/callback`
-4. Copy Client ID and Client Secret
+## 🔑 Social Provider Setup
 
-### Facebook
-1. Go to https://developers.facebook.com/apps/
-2. Create a new app
-3. Add Facebook Login product
-4. Set Valid OAuth Redirect URIs to `https://your-domain.com/api/auth/facebook/callback`
-5. Copy App ID and App Secret
+To configure OAuth credentials, create client applications in each corresponding developer portal:
 
-### Twitter
-1. Go to https://developer.twitter.com/
-2. Create a new project and app
-3. Set Callback URI to `https://your-domain.com/api/auth/twitter/callback`
-4. Copy API Key and API Secret Key
+### 🐙 GitHub Setup
+1. Visit [GitHub Developer Settings](https://github.com/settings/developers).
+2. Register a new OAuth Application.
+3. Configure **Authorization Callback URL** to: `https://your-domain.com/api/oauth/github`.
+4. Copy your **Client ID** and generate a new **Client Secret**.
 
-### LinkedIn
-1. Go to https://www.linkedin.com/developers/
-2. Create a new app
-3. Set Redirect URL to `https://your-domain.com/api/auth/linkedin/callback`
-4. Copy Client ID and Client Secret
+### 🔍 Google Setup
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+2. Create or select a project, then configure your OAuth Consent Screen.
+3. Under **Credentials**, create an **OAuth 2.0 Client ID**.
+4. Set **Authorized redirect URIs** to: `https://your-domain.com/api/oauth/google`.
+5. Save and copy your **Client ID** and **Client Secret**.
 
-## How It Works
+### 📘 Facebook Setup
+1. Visit [Facebook Developers Portal](https://developers.facebook.com/apps/).
+2. Create a new App and add the **Facebook Login** product.
+3. Navigate to Settings and configure **Valid OAuth Redirect URIs** as: `https://your-domain.com/api/oauth/facebook`.
+4. Retrieve your **App ID** and **App Secret**.
 
-1. The plugin adds two collections:
-   - `social-auth-providers`: Stores provider configurations
-   - `social-auth-tokens`: Stores user's social auth tokens
+### 🐦 Twitter Setup
+1. Go to the [Twitter Developer Portal](https://developer.twitter.com/).
+2. Create a Project and App with User Authentication settings enabled.
+3. Set your Callback URI / Redirect URL to: `https://your-domain.com/api/oauth/twitter`.
+4. Note down your **API Key** and **API Secret**.
 
-2. It adds API routes for OAuth callbacks:
-   - `/api/auth/github/callback`
-   - `/api/auth/google/callback`
-   - `/api/auth/facebook/callback`
-   - `/api/auth/twitter/callback`
-   - `/api/auth/linkedin/callback`
+### 💼 LinkedIn Setup
+1. Visit the [LinkedIn Developer Portal](https://www.linkedin.com/developers/).
+2. Create an App and associate it with a page.
+3. Under the **Auth** tab, add your **Authorized Redirect URLs**: `https://your-domain.com/api/oauth/linkedin`.
+4. Copy your **Client ID** and **Client Secret**.
 
-3. When a user authenticates via a social provider:
-   - The plugin handles the OAuth flow
-   - Creates or finds a user in the `users` collection
-   - Stores tokens in the `social-auth-tokens` collection
-   - Returns a JWT for authentication
+---
 
-## License
+## 🔒 License
 
-MIT
+Licensed under the [MIT License](LICENSE).
