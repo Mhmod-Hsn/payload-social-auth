@@ -5,7 +5,13 @@ import { fileURLToPath } from 'url';
 
 import type { socialAuthConfig } from './types.js';
 
-import { createGithubEndpoints } from './endpoints/oauth.js';
+import {
+  createFacebookEndpoints,
+  createGithubEndpoints,
+  createGoogleEndpoints,
+  createLinkedinEndpoints,
+  createTwitterEndpoints,
+} from './endpoints/oauth.js';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -21,8 +27,11 @@ export const socialAuthPlugin =
     config.custom = {
       ...config.custom,
       socialAuth: {
+        facebook: !!pluginOptions.providers?.facebook,
         github: !!pluginOptions.providers?.github,
         google: !!pluginOptions.providers?.google,
+        linkedin: !!pluginOptions.providers?.linkedin,
+        twitter: !!pluginOptions.providers?.twitter,
       },
     };
 
@@ -52,6 +61,18 @@ export const socialAuthPlugin =
     
     if (pluginOptions.providers?.github) {
       endpoints.push(...createGithubEndpoints(pluginOptions.providers.github));
+    }
+    if (pluginOptions.providers?.google) {
+      endpoints.push(...createGoogleEndpoints(pluginOptions.providers.google));
+    }
+    if (pluginOptions.providers?.facebook) {
+      endpoints.push(...createFacebookEndpoints(pluginOptions.providers.facebook));
+    }
+    if (pluginOptions.providers?.linkedin) {
+      endpoints.push(...createLinkedinEndpoints(pluginOptions.providers.linkedin));
+    }
+    if (pluginOptions.providers?.twitter) {
+      endpoints.push(...createTwitterEndpoints(pluginOptions.providers.twitter));
     }
 
     config.endpoints = [

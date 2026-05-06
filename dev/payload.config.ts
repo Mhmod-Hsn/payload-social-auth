@@ -78,13 +78,28 @@ const buildConfigWithMemoryDB = async () => {
       providers: {
         github: {
           callbackURL: 'http://localhost:3000/api/oauth/github/callback',
-          clientId: process.env.GITHUB_CLIENT_ID!,
-          clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+          clientId: process.env.GITHUB_CLIENT_ID || 'dummy_github_id',
+          clientSecret: process.env.GITHUB_CLIENT_SECRET || 'dummy_github_secret',
         },
         google: {
           callbackURL: 'http://localhost:3000/api/oauth/google/callback',
-          clientId: process.env.GOOGLE_CLIENT_ID!,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+          clientId: process.env.GOOGLE_CLIENT_ID || 'dummy_google_id',
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy_google_secret',
+        },
+        linkedin: {
+          callbackURL: 'http://localhost:3000/api/oauth/linkedin/callback',
+          clientId: process.env.LINKEDIN_CLIENT_ID || 'dummy_linkedin_id',
+          clientSecret: process.env.LINKEDIN_CLIENT_SECRET || 'dummy_linkedin_secret',
+        },
+        facebook: {
+          callbackURL: 'http://localhost:3000/api/oauth/facebook/callback',
+          clientId: process.env.FACEBOOK_CLIENT_ID || 'dummy_facebook_id',
+          clientSecret: process.env.FACEBOOK_CLIENT_SECRET || 'dummy_facebook_secret',
+        },
+        twitter: {
+          callbackURL: 'http://localhost:3000/api/oauth/twitter/callback',
+          clientId: process.env.TWITTER_CLIENT_ID || 'dummy_twitter_id',
+          clientSecret: process.env.TWITTER_CLIENT_SECRET || 'dummy_twitter_secret',
         },
       },
     }),
